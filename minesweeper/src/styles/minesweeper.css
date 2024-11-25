@@ -1,0 +1,19 @@
+/**
+ * @author Nabil L. A. <@nalleon>
+ */
+
+body{
+    background-color: rgb(20, 22, 25);
+}
+.board .col {
+    aspect-ratio: 1; 
+}
+
+.board .col > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

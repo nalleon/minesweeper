@@ -1,0 +1,43 @@
+/**
+ * @author Nabil L. A. <@nalleon>
+ */
+
+.cell {
+    border: 2px solid  #807f7f;
+    text-align: center;
+    background-color: #a5a5a5;
+    cursor: pointer;
+    gap: 10;
+}
+
+.cell.revealed {
+    animation: reveal 0.3s ease-out forwards;
+    background-color:#e2e1e1;
+}
+
+.cell.flagged {
+    background-color: yellow;
+}
+
+
+.cell.revealed.bomb {
+    background-color: red;
+}
+
+.cell.bombtest{
+    border: 2px solid red;
+}
+
+@keyframes reveal {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
