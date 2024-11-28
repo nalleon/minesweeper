@@ -8,8 +8,11 @@ export default class Game {
      */
     private board : Cell[][];
     private boardBombs : Cell[];
-    private readonly BOARD_SIZE = 3;
-    private readonly MAX_BOMBS = 3;
+    private firstClick : boolean = true;
+    private limitReveal : number = 0;
+    private readonly MAX_REVEAL_LIMIT = 9;
+    private readonly BOARD_SIZE = 25;
+    private readonly MAX_BOMBS = 35;
 
     /**
      * Constructor of the class
@@ -17,6 +20,8 @@ export default class Game {
     constructor() {
         this.board = [];
         this.boardBombs = [];
+        this.firstClick = true;
+        this.limitReveal = 0;
     }
 
     /**
@@ -36,7 +41,6 @@ export default class Game {
                 idAux++;
             }
         }
-        this.addBombs(boardCells);
         this.board = boardCells;
         
         return boardCells;
@@ -52,10 +56,11 @@ export default class Game {
 
         let bombsArray : Cell[] = [];
 
+
         while(bombsPlaced < this.MAX_BOMBS) {
             const randomPosX = Math.trunc(Math.random() * this.BOARD_SIZE);
             const randomPosY = Math.trunc(Math.random() * this.BOARD_SIZE);
-            if(!board[randomPosX][randomPosY].getIsBomb()) {
+            if(!board[randomPosX][randomPosY].getIsBomb() && !board[randomPosX][randomPosY].getIsRevealed()) {
                 board[randomPosX][randomPosY].setIsBomb(true);
                 bombsArray.push(board[randomPosX][randomPosY]);
                 bombsPlaced++;
@@ -65,8 +70,9 @@ export default class Game {
         this.boardBombs = bombsArray;
         return board;
     } 
+    
 
-
+    
     /**
      * Function to check how many adjacent bomb cells are in the selected cell
      * @param cell to check
@@ -80,6 +86,12 @@ export default class Game {
             return;
         }
 
+        if(this.limitReveal >= this.MAX_REVEAL_LIMIT){
+            return;
+        } else {
+            this.limitReveal++;
+        }
+        
 
         cell.reveal();
 
@@ -113,10 +125,69 @@ export default class Game {
         for(let i = 0; i < areaPoints.length; i++) {
             if(areaPoints[i].getIsBomb()){
                 counter++;
-                cell.setNeighboringBombs(counter);
             }
         }
 
+        cell.setNeighboringBombs(counter);
+
+        if (counter === 0) {
+            for (let i = 0; i < areaPoints.length; i++) {
+                const neighborCell = areaPoints[i];
+                    if (!neighborCell.getIsRevealed() && !neighborCell.getIsBomb()) {
+                    this.cellHasAdjacentBombs(neighborCell); 
+                }
+            }
+        }
+    }
+
+    /**
+     * Function to reveal the first cell clicked adjacent bombs
+     * @param initialCell to reveal
+     */
+    revealFirstCells(initialCell: Cell) {
+        if(initialCell.getIsBomb()){
+            return;
+        }
+        const revealedCells: Cell[] = [];
+
+        const positionsToCheck = [
+            { x: 1, y: 0 },
+            { x: -1, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: -1 },
+            { x: -1, y: 1 },
+            { x: 1, y: -1 },
+            { x: -1, y: -1 },
+            { x: 1, y: 1 },
+        ];
+
+        for (const { x, y } of positionsToCheck) {
+            const newX = initialCell.getPosX() + x;
+            const newY = initialCell.getPosY() + y;
+
+            if (this.checkValidPosition(newX, newY)) {
+                const neighborCell = this.findCellByPosition(newX, newY);
+
+                if (!neighborCell.getIsBomb() && !neighborCell.getIsRevealed()) {
+                neighborCell.reveal();
+                revealedCells.push(neighborCell);
+
+                if (neighborCell.getNeighboringBombs() === 0) {
+                    this.cellHasAdjacentBombs(neighborCell);
+                }
+                }
+
+                if (revealedCells.length >= 10) {
+                    break;
+                }
+            }
+        }
+
+        initialCell.reveal();
+
+        
+
+        this.addBombs(this.board);
     }
 
     /**
@@ -208,6 +279,14 @@ export default class Game {
         return  this.checkIfAllCellsRevealed() && this.checkAllBombsFlagged();
     }
 
+
+    /**
+     * Function to reset the reveal limit counter
+     */
+    public resetRevealLimit() {
+        this.limitReveal = 0;
+    }
+    
     /**
      * Getters and setters 
      */
@@ -217,5 +296,14 @@ export default class Game {
     
     setBoard(board : Cell[][]) {
         this.board = board;
+    }
+
+
+    getFirstClick() : boolean {
+        return this.firstClick;
+    }
+    
+    setFirstClick(firstClick : boolean) {
+        this.firstClick = firstClick;
     }
 }

@@ -37,6 +37,11 @@ const MinesweeperComponent = (props: Props) => {
       return;
     }
 
+    if (refGame.current.getFirstClick()) {
+      refGame.current.revealFirstCells(cell);
+      refGame.current.setFirstClick(false); 
+    }
+
     let auxBoard = [...board];
     setMessage(`Cell${cell.getId()} --> position: (${cell.getPosX()}, ${cell.getPosY()}), revealed: ${cell.getIsRevealed()},  flagged: ${cell.getIsFlagged()}`);
 
@@ -51,9 +56,10 @@ const MinesweeperComponent = (props: Props) => {
     if(!cell.getIsFlagged() && cell.getNeighboringBombs() == 0){      
       refGame.current.cellHasAdjacentBombs(cell);
       setBoard(auxBoard);
-
       checkGameStatus();
     }
+
+    refGame.current.resetRevealLimit();
 
     checkGameStatus();
   }
@@ -75,6 +81,7 @@ const MinesweeperComponent = (props: Props) => {
    */
   const restartGame = () => {
     const auxBoard = refGame.current.createBoard();
+    refGame.current.resetRevealLimit();
     setMessage('');
     setBoard(auxBoard);
     setGameOver(false); 
