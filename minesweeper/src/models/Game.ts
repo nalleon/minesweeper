@@ -8,8 +8,8 @@ export default class Game {
      */
     private board : Cell[][];
     private boardBombs : Cell[];
-    private readonly BOARD_SIZE = 9;
-    private readonly MAX_BOMBS = 9;
+    private readonly BOARD_SIZE = 3;
+    private readonly MAX_BOMBS = 3;
 
     /**
      * Constructor of the class
@@ -80,6 +80,9 @@ export default class Game {
             return;
         }
 
+
+        cell.reveal();
+
         const posX = cell.getPosX();
         const posY = cell.getPosY();
         let areaPoints : Cell [] = [];
@@ -113,6 +116,7 @@ export default class Game {
                 cell.setNeighboringBombs(counter);
             }
         }
+
     }
 
     /**
@@ -164,11 +168,12 @@ export default class Game {
             for (let j = 0; j < this.BOARD_SIZE; j++) {
                 const cell = this.board[i][j];
                 if (!cell.getIsBomb() && !cell.getIsRevealed()) {
+                    console.log(`Cell at (${i}, ${j}) not revealed.`);
                     return false; 
                 }
             }
         }
-
+        console.log("All non-bomb cells revealed.");
         return true; 
     }
     /**
@@ -200,7 +205,7 @@ export default class Game {
      * @returns true if all bombs are flagged and the rest of cells revealed, false otherwise
      */
     checkWin() : boolean{
-        return this.checkAllBombsFlagged() && this.checkIfAllCellsRevealed();
+        return  this.checkIfAllCellsRevealed() && this.checkAllBombsFlagged();
     }
 
     /**

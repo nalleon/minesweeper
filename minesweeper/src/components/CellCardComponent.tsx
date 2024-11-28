@@ -22,7 +22,6 @@ const CellCardComponent = (props: Props) => {
   const handleCellClick = (event: React.MouseEvent) => {
     event.preventDefault(); 
     if (!cell.getIsRevealed() && !cell.getIsFlagged()) {
-      cell.reveal();
       modifyCellParent(cell); 
     }
   };

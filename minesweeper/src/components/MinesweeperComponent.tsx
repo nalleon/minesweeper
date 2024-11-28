@@ -37,24 +37,32 @@ const MinesweeperComponent = (props: Props) => {
       return;
     }
 
-    let auxBoard = board;
+    let auxBoard = [...board];
     setMessage(`Cell${cell.getId()} --> position: (${cell.getPosX()}, ${cell.getPosY()}), revealed: ${cell.getIsRevealed()},  flagged: ${cell.getIsFlagged()}`);
 
     if(cell.getIsBomb() && cell.getIsRevealed()){
       setMessage('Game Over! You hit a bomb');
       auxBoard = refGame.current.revealAllCells();      
-      setBoard([...auxBoard]);
+      setBoard(auxBoard);
       setGameOver(true);
       return;
     }
     
-    if(cell.getIsRevealed() && !cell.getIsFlagged() && cell.getNeighboringBombs() == 0){      
+    if(!cell.getIsFlagged() && cell.getNeighboringBombs() == 0){      
       refGame.current.cellHasAdjacentBombs(cell);
-      setBoard([...auxBoard]);
-      return;
+      setBoard(auxBoard);
+
+      checkGameStatus();
     }
 
+    checkGameStatus();
+  }
 
+  /**
+   * Function to check the game status (win)
+   */
+
+  const checkGameStatus = () => {
     if(refGame.current.checkWin()){
       setMessage('You won!');
       setGameOver(true);
@@ -62,6 +70,9 @@ const MinesweeperComponent = (props: Props) => {
     }
   }
 
+  /**
+   * Function to reset the game 
+   */
   const restartGame = () => {
     const auxBoard = refGame.current.createBoard();
     setMessage('');
