@@ -42,7 +42,7 @@ export default class Game {
             }
         }
         this.board = boardCells;
-        
+        this.addBombs(boardCells);
         return boardCells;
     }
 
@@ -144,10 +144,19 @@ export default class Game {
      * Function to reveal the first cell clicked adjacent bombs
      * @param initialCell to reveal
      */
+
     revealFirstCells(initialCell: Cell) {
-        if(initialCell.getIsBomb()){
-            return;
+        
+        //if(!this.firstClick){
+            //  return;
+            //}
+            
+        if(initialCell.getIsBomb() && this.firstClick){
+            this.hideBomb(initialCell);
         }
+            
+        this.firstClick = false;
+
         const revealedCells: Cell[] = [];
 
         const positionsToCheck = [
@@ -169,12 +178,12 @@ export default class Game {
                 const neighborCell = this.findCellByPosition(newX, newY);
 
                 if (!neighborCell.getIsBomb() && !neighborCell.getIsRevealed()) {
-                neighborCell.reveal();
-                revealedCells.push(neighborCell);
+                    neighborCell.reveal();
+                    revealedCells.push(neighborCell);
 
-                if (neighborCell.getNeighboringBombs() === 0) {
-                    this.cellHasAdjacentBombs(neighborCell);
-                }
+                    if (neighborCell.getNeighboringBombs() === 0) {
+                            this.cellHasAdjacentBombs(neighborCell);
+                        }
                 }
 
                 if (revealedCells.length >= 10) {
@@ -184,11 +193,8 @@ export default class Game {
         }
 
         initialCell.reveal();
-
-        
-
-        this.addBombs(this.board);
-    }
+        this.setFirstClick(false);
+        }
 
     /**
      * Function to find a cell by position
@@ -305,5 +311,22 @@ export default class Game {
     
     setFirstClick(firstClick : boolean) {
         this.firstClick = firstClick;
+    }
+
+    hideBomb(cell : Cell) : boolean {
+
+        let indexX = Math.floor(Math.random() * this.BOARD_SIZE);
+        let indexY = Math.floor(Math.random() * this.BOARD_SIZE);
+
+        while (this.board[indexX][indexY].getIsBomb() || (indexX === cell.getPosX() && indexY === cell.getPosY())) {
+            indexX = Math.floor(Math.random() * this.BOARD_SIZE);
+            indexY = Math.floor(Math.random() * this.BOARD_SIZE);
+        }
+
+        let temp = cell;
+        this.board[cell.getPosX()][cell.getPosY()] = this.board[indexX][indexY];
+        this.board[indexX][indexY] = temp;
+
+        return true;
     }
 }
