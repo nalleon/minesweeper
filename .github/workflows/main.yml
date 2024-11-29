@@ -5,7 +5,6 @@ on:
     branches:
       - main  # o el nombre de tu rama principal
 
-
 jobs:
   build:
     runs-on: ubuntu-latest  # Utiliza un runner en Ubuntu
@@ -28,7 +27,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/reactapp:latest
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/minesweeper:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,8 +40,8 @@ jobs:
         host: ${{ vars.HOSTING_PC }}
         key: ${{ secrets.HOSTING_KEY }}
         script: |
-            docker stop reactapp ; 
-            docker rm reactapp -f ; 
-            docker rmi ${{ vars.DOCKERHUB_USERNAME }}/reactapp -f ; 
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/reactapp
-            docker run --name reactapp -d -p 9092:80 ${{ vars.DOCKERHUB_USERNAME }}/reactapp 
+            docker stop minesweeper ; 
+            docker rm minesweeper -f ; 
+            docker rmi ${{ vars.DOCKERHUB_USERNAME }}/minesweeper -f ; 
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/minesweeper
+            docker run --name minesweeper -d -p 9092:80 ${{ vars.DOCKERHUB_USERNAME }}/minesweeper 
