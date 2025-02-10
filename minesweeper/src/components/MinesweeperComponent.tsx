@@ -37,7 +37,7 @@ const MinesweeperComponent = (props: Props) => {
       return;
     }
 
-    if (refGame.current.getFirstClick()) {
+    if (refGame.current.getFirstClick() != false) {
       refGame.current.revealFirstCells(cell);
       refGame.current.setFirstClick(false); 
     }
@@ -47,7 +47,7 @@ const MinesweeperComponent = (props: Props) => {
 
     if(cell.getIsBomb() && cell.getIsRevealed()){
       setMessage('Game Over! You hit a bomb');
-      auxBoard = refGame.current.revealAllCells();      
+      auxBoard = refGame.current.revealAllCells();
       setBoard(auxBoard);
       setGameOver(true);
       return;
@@ -106,7 +106,7 @@ const MinesweeperComponent = (props: Props) => {
                   {row.map((cell) => (
                     <div className='col p-1'>
                       <CellCardComponent
-                        key={cell.getId()}
+                        key={cell.getId()+ "_"+ rowIndex}
                         cell={cell}
                         modifyCellParent={modifyCell} 
                       />

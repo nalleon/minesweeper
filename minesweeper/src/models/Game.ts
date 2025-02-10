@@ -95,6 +95,11 @@ export default class Game {
 
         cell.reveal();
 
+        if(cell.getIsBomb()){
+            this.revealAllCells();
+            return;
+        }
+
         const posX = cell.getPosX();
         const posY = cell.getPosY();
         let areaPoints : Cell [] = [];
@@ -130,7 +135,7 @@ export default class Game {
 
         cell.setNeighboringBombs(counter);
 
-        if (counter === 0) {
+        if (counter == 0) {
             for (let i = 0; i < areaPoints.length; i++) {
                 const neighborCell = areaPoints[i];
                     if (!neighborCell.getIsRevealed() && !neighborCell.getIsBomb()) {
@@ -146,10 +151,9 @@ export default class Game {
      */
 
     revealFirstCells(initialCell: Cell) {
-        
-        //if(!this.firstClick){
-            //  return;
-            //}
+        if(this.firstClick == false){
+             return;
+        }
             
         if(initialCell.getIsBomb() && this.firstClick){
             this.hideBomb(initialCell);
@@ -182,8 +186,8 @@ export default class Game {
                     revealedCells.push(neighborCell);
 
                     if (neighborCell.getNeighboringBombs() === 0) {
-                            this.cellHasAdjacentBombs(neighborCell);
-                        }
+                        this.cellHasAdjacentBombs(neighborCell);
+                    }
                 }
 
                 if (revealedCells.length >= 10) {
@@ -227,11 +231,11 @@ export default class Game {
     revealAllCells() : Cell[][] {
         for(let i = 0; i < this.BOARD_SIZE; i++) {
             for(let j = 0; j < this.BOARD_SIZE; j++) {
-                this.board[i][j].reveal();
                 this.board[i][j].unflag();
                 this.cellHasAdjacentBombs(this.board[i][j]);
             }
         }
+        
         return this.board;
     }
 
